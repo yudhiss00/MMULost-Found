@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title href="index.html">Lost & Found</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+<body>
+  
+  <header>
+   <a href="index.html" style="text-decoration: none;">
+      <h1 style="font-style: normal;">
+        <img src="logo.png" alt="Logo" style="display:block;margin-left:auto;margin-right:auto;height:100px;width:200px;">
+      </h1>
+    </a>
+	
+    <nav style="margin-top:-60px;">
+      <ul>
+        <li><a href="lost.html">Lost</a></li>
+        <li><a href="found.html">Found</a></li>
+		  <li class="logout"><a href="login.html">Logout</a></li> <!-- logout button -->
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Add the new section -->
+  <div id="marquee" style="background-color: black; color: white; overflow: hidden; position: relative;">
+    <div style="position: absolute; left: 0; padding: 10px;">
+      <strong>Latest Found Items:</strong>
+    </div>
+    <marquee id="latest-found-items" behavior="scroll" direction="left"></marquee>
+  </div>
+
+  <style>
+body {
+  background-image:  url("back1.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  font-family: Arial, sans-serif;
+}
+
+	 nav ul {
+      display: flex;
+      justify-content: space-between;
+      list-style-type: none;
+    }
+    nav ul li.logout {
+      margin-left: auto;
+    }
+
+  /* Add style for the new section */
+  #marquee {
+    padding: 10px;
+  }
+
+  #marquee marquee {
+    font-size: 18px;
+    font-family: Arial, sans-serif;
+  }
+
+  header {
+    background-color: skyblue;
+    padding: 20px;
+  }
+
+  h1 {
+    color: white;
+    font-size: 18px;
+    font-family: Arial, sans-serif;
+  }
+
+  nav a {
+    font-size: 18px;
+    font-family: Arial, sans-serif;
+    padding: 15px;
+    text-decoration: none;
+    color: white;
+  }
+
+  #content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 30px;
+  }
+
+  .item-card {
+    background-color: #5A96E3;
+    border-radius: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-top: 0px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    height: 200px;
+    width: 200px;
+  }
+
+  .item-card h2 {
+    font-size: 24px;
+    font-family: Arial, sans-serif;
+    color: white;
+    margin-bottom: 10px;
+  }
+
+  .item-card p {
+    font-size: 18px;
+    font-family: Arial, sans-serif;
+    color: white;
+    margin: 5px 0;
+  }
+  #losth2 h2{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 36px;
+    font-weight: 600;
+  }
+
+  /* Add style for the floating buttons */
+  .floating-button {
+    position: fixed;
+    bottom: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #5A96E3;
+    border-radius: 50%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .floating-button.add {
+    right: 20px;
+  }
+
+  .floating-button.delete {
+    right: 80px;
+  }
+
+  </style>
+
+  <h2 style="font-size: 36px;font-family: Arial, Helvetica, sans-serif;font-weight: 600;color:white;">Found Item</h2>
+  <div id="content"></div>
+
+  <!-- Add the floating buttons -->
+  <div class="floating-button add" onclick="displayAddItemForm()">+</div>
+  <div class="floating-button delete" onclick="displayDeleteItemForm()">-</div>
+  
+ 
+<script>
+
+     const firebaseConfig = {
+    apiKey: "AIzaSyDvGAfc902_i4cDukhqFtyLPkAof8nOP0U",
+    authDomain: "lost-and-found-bb7dd.firebaseapp.com",
+    databaseURL: "https://lost-and-found-bb7dd-default-rtdb.firebaseio.com",
+    projectId: "lost-and-found-bb7dd",
+    storageBucket: "lost-and-found-bb7dd.appspot.com",
+    messagingSenderId: "537601190249",
+    appId: "1:537601190249:web:c054ec061963aaa42435f8",
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+
+  const firebaseRef = firebase.database().ref("founditems");
+
+  // Function to display the form for adding a found item
+  function displayAddItemForm() {
+    const contentDiv = document.getElementById("content");
+    contentDiv.innerHTML = "";
+
+    const addItemForm = document.createElement("form");
+
+    const itemNameInput = document.createElement("input");
+    itemNameInput.type = "text";
+    itemNameInput.placeholder = "Item Name";
+    addItemForm.appendChild(itemNameInput);
+
+    const foundDateInput = document.createElement("input");
+    foundDateInput.type = "text";
+    foundDateInput.placeholder = "Found Date";
+    addItemForm.appendChild(foundDateInput);
+
+    const founderNameInput = document.createElement("input");
+    founderNameInput.type = "text";
+    founderNameInput.placeholder = "Founder Name";
+    addItemForm.appendChild(founderNameInput);
+
+    const founderContactInput = document.createElement("input");
+    founderContactInput.type = "text";
+    founderContactInput.placeholder = "Founder Contact";
+    addItemForm.appendChild(founderContactInput);
+
+    const founderIDInput = document.createElement("input");
+    founderIDInput.type = "text";
+    founderIDInput.placeholder = "Founder ID";
+    addItemForm.appendChild(founderIDInput);
+
+    const submitButton = document.createElement("button");
+    submitButton.type = "submit";
+    submitButton.innerText = "Submit";
+    addItemForm.appendChild(submitButton);
+
+    addItemForm.addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      // Retrieve the entered values
+      const itemName = itemNameInput.value;
+      const foundDate = foundDateInput.value;
+      const founderName = founderNameInput.value;
+      const founderContact = founderContactInput.value;
+      const founderID = founderIDInput.value;
+
+      // Create a new found item object
+      const newItem = {
+        item_name: itemName,
+        found_date: foundDate,
+        founder_name: founderName,
+        founder_contact: founderContact,
+        founder_id: founderID
+      };
+
+      // Insert the new found item to the Firebase database
+      firebaseRef.push(newItem);
+
+      // Clear the form fields
+      itemNameInput.value = "";
+      foundDateInput.value = "";
+      founderNameInput.value = "";
+      founderContactInput.value = "";
+      founderIDInput.value = "";
+    });
+
+    contentDiv.appendChild(addItemForm);
+  }
+
+  // Function to display the form for deleting a found item
+  function displayDeleteItemForm() {
+    const contentDiv = document.getElementById("content");
+    contentDiv.innerHTML = "";
+
+    const deleteItemForm = document.createElement("form");
+
+    const itemIdInput = document.createElement("input");
+    itemIdInput.type = "text";
+    itemIdInput.placeholder = "Item ID";
+    deleteItemForm.appendChild(itemIdInput);
+
+    const submitButton = document.createElement("button");
+    submitButton.type = "submit";
+    submitButton.innerText = "Delete";
+    deleteItemForm.appendChild(submitButton);
+
+    deleteItemForm.addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      // Retrieve the entered item ID
+      const itemId = itemIdInput.value;
+
+      // Remove the found item from the Firebase database
+      firebaseRef.child(itemId).remove();
+
+      // Clear the form field
+      itemIdInput.value = "";
+    });
+
+    contentDiv.appendChild(deleteItemForm);
+  }
+
+  firebaseRef.on("value", function(snapshot) {
+    const contentDiv = document.getElementById("content");
+
+    if (snapshot.exists()) {
+      contentDiv.innerHTML = "";
+
+      snapshot.forEach(function(childSnapshot) {
+        const element = childSnapshot.val();
+        const itemId = childSnapshot.key; // Get the item ID
+
+        const itemCard = document.createElement("div");
+        itemCard.classList.add("item-card");
+
+        const itemName = document.createElement("h2");
+        itemName.innerText = element.item_name;
+
+        const itemDate = document.createElement("p");
+        itemDate.innerText = "Found Date: " + element.found_date;
+
+        const itemLocation = document.createElement("p");
+        itemLocation.innerText = "Item Location: Reception";
+
+        const founderName = document.createElement("p");
+        founderName.innerText = "Founder Name: " + element.founder_name;
+
+        const founderContact = document.createElement("p");
+        founderContact.innerText = "Founder Contact: " + element.founder_contact;
+
+        const founderID = document.createElement("p");
+        founderID.innerText = "Founder ID: " + element.founder_id;
+
+        const deleteButton = document.createElement("button");
+        deleteButton.innerText = "Delete";
+        deleteButton.addEventListener("click", function() {
+          // Remove the found item from the Firebase database
+          firebaseRef.child(itemId).remove();
+        });
+
+        itemCard.appendChild(itemName);
+        itemCard.appendChild(itemDate);
+        itemCard.appendChild(itemLocation);
+        itemCard.appendChild(founderName);
+        itemCard.appendChild(founderContact);
+        itemCard.appendChild(founderID);
+        itemCard.appendChild(deleteButton);
+
+        contentDiv.appendChild(itemCard);
+      });
+    } else {
+      contentDiv.innerHTML = "No items found.";
+    }
+  });
+
+  // Add code to update the marquee with the latest found item
+  firebaseRef.limitToLast(1).on("value", function(snapshot) {
+    const marquee = document.getElementById("latest-found-items");
+    snapshot.forEach(function(childSnapshot) {
+      const element = childSnapshot.val();
+      marquee.textContent = `Item: ${element.item_name} - Date: ${element.found_date} - Found By: ${element.founder_name}`;
+    });
+  });
+</script>
+
+</body>
+</html>

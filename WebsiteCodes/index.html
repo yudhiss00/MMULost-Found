@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title href="index.html">Lost & Found</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+<body>
+    <style>
+	
+	body {
+  background-image:  url("back1.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  font-family: Arial, sans-serif;
+}
+        header {
+          background-color: skyblue;
+          padding: 20px;
+        }
+      
+        h1 {
+          color: white;
+          font-size: 18px;
+          font-family: Arial, sans-serif;
+        }
+      
+        nav a {
+          font-size: 18px;
+          font-family: Arial, sans-serif;
+          padding: 15px;
+          text-decoration: none;
+          color: white;
+        }
+      
+        #content {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-around;
+          align-items: center;
+          margin-top: 30px;
+          padding: 30px;
+        }
+        #content p{
+            font-family: arial;
+            font-size: 18px;
+            
+        }
+
+        /* Styles for the marquee sections */
+        .marquee-section {
+            overflow: hidden; 
+            position: relative;
+            padding: 10px;
+        }
+
+        .marquee-section strong {
+            position: absolute; 
+            left: 0; 
+            padding: 10px;
+        }
+
+        .marquee-section marquee {
+            font-size: 18px;
+            font-family: Arial, sans-serif;
+        }
+
+        #lost-items-marquee {
+            background-color: black; 
+            color: white;
+        }
+
+        #found-items-marquee {
+            background-color: white; 
+            color: black;
+        }
+		 nav ul {
+      display: flex;
+      justify-content: space-between;
+      list-style-type: none;
+    }
+    nav ul li.logout {
+      margin-left: auto;
+    }
+    </style>
+
+  <header>
+ <a href="index.html" style="text-decoration: none;">
+      <h1 style="font-style: normal;">
+        <img src="logo.png" alt="Logo" style="display:block;margin-left:auto;margin-right:auto;height:100px;width:200px;">
+      </h1>
+    </a>
+     <nav style="margin-top:-60px;">
+      <ul>
+        <li><a href="lost.html">Lost</a></li>
+        <li><a href="found.html">Found</a></li>
+		  <li class="logout"><a href="login.html">Logout</a></li> <!-- logout button -->
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Lost items marquee -->
+  <div id="lost-items-marquee" class="marquee-section">
+    <div>
+      <strong>Latest Lost Item:</strong>
+    </div>
+    <marquee id="latest-lost-items" behavior="scroll" direction="left"></marquee>
+  </div>
+
+  <!-- Found items marquee -->
+  <div id="found-items-marquee" class="marquee-section">
+    <div>
+      <strong>Latest Found Item:</strong>
+    </div>
+    <marquee id="latest-found-items" behavior="scroll" direction="left"></marquee>
+  </div>
+
+  <div id="content">
+    <!-- Your content goes here... -->
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDvGAfc902_i4cDukhqFtyLPkAof8nOP0U",
+      authDomain: "lost-and-found-bb7dd.firebaseapp.com",
+      databaseURL: "https://lost-and-found-bb7dd-default-rtdb.firebaseio.com",
+      projectId: "lost-and-found-bb7dd",
+      storageBucket: "lost-and-found-bb7dd.appspot.com",
+      messagingSenderId: "537601190249",
+      appId: "1:537601190249:web:c054ec061963aaa42435f8",
+      // measurementId: "G-28ZH6FTR4P"
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+
+    // Fetch latest lost items
+    const lostItemsRef = firebase.database().ref("lostitems");
+    lostItemsRef.limitToLast(1).on("child_added", function(snapshot) {
+      const latestLostItem = snapshot.val();
+      document.getElementById("latest-lost-items").innerText = 
+         "Item Lost: " + latestLostItem["itemName"] + 
+        ", Lost By: " + latestLostItem["lostername"];
+    });
+
+    // Fetch latest found items
+    const foundItemsRef = firebase.database().ref("founditems");
+    foundItemsRef.limitToLast(1).on("child_added", function(snapshot) {
+      const latestFoundItem = snapshot.val();
+      document.getElementById("latest-found-items").innerText = 
+        "Item Name: " + latestFoundItem.item_name +
+        ", Found By: " + latestFoundItem.founder_name;
+    });
+  </script>
+</body>
+</html>

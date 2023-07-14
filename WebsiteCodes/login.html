@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MMU Admin Portal Login</title>
+  <style>
+    body {
+ background-image: url("back1.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;    
+	font-family: Arial, sans-serif;
+    }
+
+    .container {
+	margin-top: 150px;
+      max-width: 600px;
+    margin-left:auto;
+	margin-right:auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .logo img {
+      max-width: 50px;
+      margin-right: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 20px
+
+    }
+	.form-container{
+	
+	padding-right:20px;
+	
+	}
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #666;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      font-size: 16px;
+    }
+
+    .form-group input[type="button"] {
+      width: 100%;
+      padding: 10px;
+      background-color: #1E90FF;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+
+    .form-group input[type="button"]:hover {
+      background-color: #0066CC;
+    }
+
+    .error-message {
+      text-align: center;
+      color: #f44336;
+    }
+  </style>
+  <script type="text/javascript">
+    function login() {
+      var username = document.getElementById("username").value;
+      var password = document.getElementById("password").value;
+
+      if ((username === "admin1" && password === "admin12345") || (username === "admin2" && password === "12345admin")) {
+        window.location.href = "index.html";
+      } else {
+        var errorMessage = document.getElementById("error-message");
+        errorMessage.textContent = "Incorrect username or password.";
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <img src="logo.jpg" alt="Logo">
+      <h2 style="color: #1E90FF;">MMU Admin Portal Login</h2>
+    </div>
+    <div class="form-container">
+
+    <div class="form-group">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+    </div>
+
+    <div class="form-group">
+      <input type="button" value="Login" onclick="login()">
+    </div>
+
+    <div class="error-message" id="error-message"></div>
+  </div>
+  </div>
+</body>
+</html>
